@@ -37,7 +37,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 static int lsock = -1;
 
-
 static int handle_request(struct client *c, struct reqresp *req);
 static const char *reqstr(int req);
 
@@ -49,21 +48,26 @@ int init_unix(void)
 
 	if(lsock >= 0) return 0;
 
+	const char *env_sockname = getenv("SPNAV_SOCKET");
+	if (env_sockname != NULL) {
+		sock_name = env_sockname;
+	}
+
 	if((s = socket(PF_UNIX, SOCK_STREAM, 0)) == -1) {
 		logmsg(LOG_ERR, "failed to create socket: %s\n", strerror(errno));
 		return -1;
 	}
 
-	unlink(SOCK_NAME);	/* in case it already exists */
+	unlink(sock_name);	/* in case it already exists */
 
 	memset(&addr, 0, sizeof addr);
 	addr.sun_family = AF_UNIX;
-	strcpy(addr.sun_path, SOCK_NAME);
+	strcpy(addr.sun_path, sock_name);
 
 	prev_umask = umask(0);
 
 	if(bind(s, (struct sockaddr*)&addr, sizeof addr) == -1) {
-		logmsg(LOG_ERR, "failed to bind unix socket: %s: %s\n", SOCK_NAME, strerror(errno));
+		logmsg(LOG_ERR, "failed to bind unix socket: %s: %s\n", sock_name, strerror(errno));
 		close(s);
 		return -1;
 	}
@@ -73,7 +77,7 @@ int init_unix(void)
 	if(listen(s, 8) == -1) {
 		logmsg(LOG_ERR, "listen failed: %s\n", strerror(errno));
 		close(s);
-		unlink(SOCK_NAME);
+		unlink(sock_name);
 		return -1;
 	}
 
@@ -87,7 +91,7 @@ void close_unix(void)
 		close(lsock);
 		lsock = -1;
 
-		unlink(SOCK_NAME);
+		unlink(sock_name);
 	}
 }
 

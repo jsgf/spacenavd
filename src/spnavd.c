@@ -48,6 +48,7 @@ static void sig_handler(int s);
 static char *fix_path(char *str);
 
 char *cfgfile = DEF_CFGFILE;
+const char *sock_name = DEF_SOCK_NAME;
 static char *logfile = DEF_LOGFILE;
 static int pfd[2];
 
@@ -378,7 +379,7 @@ static int find_running_daemon(void)
 	}
 	memset(&addr, 0, sizeof addr);
 	addr.sun_family = AF_UNIX;
-	strncpy(addr.sun_path, SOCK_NAME, sizeof addr.sun_path);
+	strncpy(addr.sun_path, sock_name, sizeof addr.sun_path);
 
 	if(connect(s, (struct sockaddr*)&addr, sizeof addr) == -1) {
 		close(s);

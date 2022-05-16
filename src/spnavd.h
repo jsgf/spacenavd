@@ -25,8 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define DEF_CFGFILE		CFGDIR "/spnavrc"
 #define DEF_LOGFILE		"/var/log/spnavd.log"
+#define DEF_SOCK_NAME	"/var/run/spnav.sock"
 
-#define SOCK_NAME	"/var/run/spnav.sock"
+extern const char *sock_name;
+
 #define PIDFILE		"/var/run/spnavd.pid"
 #define SYSLOG_ID	"spnavd"
 
